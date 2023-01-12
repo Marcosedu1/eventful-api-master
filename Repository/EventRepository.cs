@@ -5,20 +5,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace eventful_api_master.Repository
 {
-    public class UserRepository: IUserRepository
+    public class EventRepository: IEventRepository
     {
         readonly DatabaseContext _dbContext = new();
 
-        public UserRepository(DatabaseContext dbContext)
+        public EventRepository(DatabaseContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public List<User> GetUsers()
+        public List<Event> GetEvents()
         {
             try
             {
-                return _dbContext.Users.Where(x => x.Active).ToList();
+                return _dbContext.Events.Where(x => x.Active).ToList();
             }
             catch (Exception)
             {
@@ -28,12 +28,12 @@ namespace eventful_api_master.Repository
         }
 
 
-        public async Task<User?> GetUser(int id)
+        public async Task<Event?> GetEvent(int id)
         {
             try
             {
-                User? user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id && x.Active);
-                return user;
+                Event? eventData = await _dbContext.Events.FirstOrDefaultAsync(x => x.Id == id && x.Active);
+                return eventData;
             }
             catch (Exception)
             {        
@@ -41,12 +41,11 @@ namespace eventful_api_master.Repository
                 throw;
             }
         }
-        public async Task UpdateUser(User user)
+        public async Task UpdateEvent(Event eventData)
         {
             try
             {
-                _dbContext.Entry(user).State = EntityState.Modified;
-                //_dbContext.Users.Update(user);
+                _dbContext.Entry(eventData).State = EntityState.Modified;
                 await _dbContext.SaveChangesAsync();
             }
             catch (Exception)
@@ -55,37 +54,34 @@ namespace eventful_api_master.Repository
                 throw;
             }
         }
-        public async Task<User> AddUser(User user)
+        public async Task<Event> AddEvent(Event eventData)
         {
             try
             {
-                _dbContext.Users.Add(user);
+                _dbContext.Events.Add(eventData);
                 await _dbContext.SaveChangesAsync();
 
-                user.CreationUser = user.Id;
-                _dbContext.Entry(user).State = EntityState.Modified;
+                _dbContext.Entry(eventData).State = EntityState.Modified;
                 _dbContext.SaveChangesAsync();
-                return user;
+                return eventData;
             }
             catch (Exception)
             {
                 throw;
             }
         }
-        public async Task<User> DeleteUser(int id)
+        public async Task<Event> DeleteEvent(int id)
         {
             try
             {
-                User? user = await _dbContext.Users.FindAsync(id);
-                if (user != null)
+                Event? eventData = await _dbContext.Events.FindAsync(id);
+                if (eventData != null)
                 {
-                    user.Active = false;
-                    user.ChangeDate = DateTime.Now;
-                    user.ChangeUser = user.Id;
+                    eventData.Active = false;
 
-                    _dbContext.Entry(user).State = EntityState.Modified;
+                    _dbContext.Entry(eventData).State = EntityState.Modified;
                     _dbContext.SaveChangesAsync();
-                    return user;
+                    return eventData;
                 }
 
                 throw new ArgumentNullException();
@@ -97,7 +93,7 @@ namespace eventful_api_master.Repository
             }
         }
 
-        public bool CheckUser(int id) => _dbContext.Users.Any(x => x.Id == id && x.Active);
+        public bool CheckEvent(int id) => _dbContext.Events.Any(x => x.Id == id && x.Active);
 
     }
 }

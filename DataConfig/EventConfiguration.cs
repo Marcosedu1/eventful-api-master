@@ -4,44 +4,48 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace eventful_api_master.DataConfig
 {
-    public class UserConfiguration : IEntityTypeConfiguration<User>
+    public class EventConfiguration : IEntityTypeConfiguration<Event>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<Event> builder)
         {
-            builder.ToTable("User");
+            builder.ToTable("Event");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-            builder.Property(x => x.FirstName)
-                .HasColumnType("varchar(20)")
-                .IsRequired();
-
-            builder.Property(x => x.LastName)
-                .HasColumnType("varchar(20)")
-                .IsRequired();
-
-            builder.Property(x => x.Email)
+            builder.Property(x => x.Title)
                 .HasColumnType("varchar(100)")
                 .IsRequired();
 
-            builder.Property(x => x.Password)
-                .HasColumnType("varchar(32)")
+            builder.Property(x => x.Description)
+                .HasColumnType("varchar(MAX)")
                 .IsRequired();
 
-            builder.Property(x => x.Cpf)
-                .HasColumnType("char(11)")
+            builder.Property(x => x.Banner)
+                .HasColumnType("varchar(MAX)")
                 .IsRequired();
 
-            builder.Property(x => x.BirthDate)
+            builder.Property(x => x.Datetime)
                 .HasColumnType("datetime")
                 .IsRequired();
 
-            builder.Property(x => x.Genre)
-                .HasColumnType("tinyint")
+            builder.Property(x => x.Cep)
+                .HasColumnType("char(8)")
                 .IsRequired();
 
-            builder.Property(x => x.AcceptedTerms)
-                .HasColumnType("bit")
+            builder.Property(x => x.City)
+                .HasColumnType("varchar(50)")
+                .IsRequired();
+
+            builder.Property(x => x.Uf)
+                .HasColumnType("char(2)")
+                .IsRequired();
+
+            builder.Property(x => x.Address)
+                .HasColumnType("varchar(100)")
+                .IsRequired();
+
+            builder.Property(x => x.Number)
+                .HasColumnType("varchar(5)")
                 .IsRequired();
 
             builder.Property(x => x.Active)

@@ -1,9 +1,11 @@
 using eventful_api_master.Context;
 using eventful_api_master.Interface;
 using eventful_api_master.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace eventful_api_master
 {
@@ -13,19 +15,24 @@ namespace eventful_api_master
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("dbConnection")));
-            builder.Services.AddTransient<IUser, UserRepository>();
+            builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("dbConnection")));
+            builder.Services.AddTransient<IUserRepository, UserRepository>();
+            builder.Services.AddTransient<IEventRepository, EventRepository>();
+            builder.Services.AddTransient<IAuthenticationRepository, AuthenticationRepository>();
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles).AddNewtonsoftJson();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddAuthentication().AddJwtBearer(options =>
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,

@@ -11,9 +11,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Utils\**" />
+    <Content Remove="Utils\**" />
+    <EmbeddedResource Remove="Utils\**" />
+    <None Remove="Utils\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.1">
       <PrivateAssets>all</PrivateAssets>

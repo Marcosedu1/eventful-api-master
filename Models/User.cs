@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace eventful_api_master.Models
@@ -6,25 +8,47 @@ namespace eventful_api_master.Models
     public class User
     {
         public int Id { get; set; }
-        public string firstName { get; set; }
-        public string lastName { get; set; }
-        public string email { get; set; }
-        public string password { get; set; }
-        public string cpf { get; set; }
+
+        [JsonProperty("firstName")]
+        public string FirstName { get; set; }
+
+        [JsonProperty("lastName")]
+        public string LastName { get; set; }
+
+        [JsonProperty("email")]
+        public string Email { get; set; }
+
+        [JsonProperty("password")]
+        public string Password { get; set; }
+
+        [JsonProperty("cpf")]
+        public string Cpf { get; set; }
+
         [JsonProperty("birthdate")]
-        private string birthDate { get; set; }
-        public int genre { get; set; }
-        public bool acceptedTerms { get; set; }
-        public bool active { get; set; }
-        public DateTime creationDate { get; set; }
-        public DateTime changeDate { get; set; }
-        public int creationUser { get; set; }
-        public int changeUser { get; set; }
+        public DateTime BirthDate { get; set; }
+
+        [JsonProperty("genre")]
+        public int Genre { get; set; }
+
+        [JsonProperty("acceptedTerms")]
+        public bool AcceptedTerms { get; set; } = false;
 
         [JsonIgnore]
-        public DateTime? birthdate
-        {
-            get { return DateTime.Parse(birthDate, new CultureInfo("en-US")); }
-        }
+        public bool Active { get; set; } = true;
+
+        [JsonIgnore]
+        public DateTime CreationDate { get; set; } = DateTime.Now;
+
+        [JsonIgnore]
+        [AllowNull]
+        public DateTime? ChangeDate { get; set; } = null;
+
+        [JsonIgnore]
+        public int CreationUser { get; set; }
+
+        [JsonIgnore]
+        [AllowNull]
+        public int? ChangeUser { get; set; } = null;
+                
     }
 }

@@ -10,42 +10,42 @@ namespace eventful_api_master.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/user")]
-    public class UserController: ControllerBase
+    [Route("api/event")]
+    public class EventController: ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IEventRepository _eventRepository;
 
-        public UserController(IUserRepository userRepository)
+        public EventController(IEventRepository eventRepository)
         {
-            _userRepository = userRepository;
+            _eventRepository = eventRepository;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> Get()
+        public async Task<ActionResult<IEnumerable<Event>>> Get()
         {
-            return await Task.FromResult(_userRepository.GetUsers());
+            return await Task.FromResult(_eventRepository.GetEvents());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> Get(int id)
+        public async Task<ActionResult<Event>> Get(int id)
         {
-            var user = await Task.FromResult(await _userRepository.GetUser(id));
-            if (user == null)
+            var eventData = await Task.FromResult(await _eventRepository.GetEvent(id));
+            if (eventData == null)
             {
                 return NotFound();
             }
-            return Ok(user);
+            return Ok(eventData);
         }
 
         [HttpPost]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]        
-        public async Task<IActionResult> Add(User user)
+        public async Task<IActionResult> Add(Event eventData)
         {
             try
             {
-                await _userRepository.AddUser(user);
-                return CreatedAtAction(nameof(Add), new { id = user.Id }, user);
+                await _eventRepository.AddEvent(eventData);
+                return CreatedAtAction(nameof(Add), new { id = eventData.Id }, eventData);
             }
             catch (Exception)
             {                
@@ -54,27 +54,27 @@ namespace eventful_api_master.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<User>> Update(int id, [FromBody]JsonPatchDocument<User> user)
+        public async Task<ActionResult<Event>> Update(int id, [FromBody]JsonPatchDocument<Event> eventData)
         {
-            var userUpdate = await _userRepository.GetUser(id);
+            var eventUpdate = await _eventRepository.GetEvent(id);
 
-            if (userUpdate == null)
+            if (eventUpdate == null)
             {
                 return NotFound();
             }
             try
             {
-                user.ApplyTo(userUpdate,ModelState);
-                await _userRepository.UpdateUser(userUpdate);
+                eventData.ApplyTo(eventUpdate, ModelState);
+                await _eventRepository.UpdateEvent(eventUpdate);
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
-                return Ok(userUpdate);
+                return Ok(eventUpdate);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!EventExists(id))
                 {
                     return NotFound();
                 }
@@ -86,14 +86,14 @@ namespace eventful_api_master.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> Delete(int id)
+        public async Task<ActionResult<Event>> Delete(int id)
         {
-            await _userRepository.DeleteUser(id);
+            await _eventRepository.DeleteEvent(id);
             return NoContent();
         }
-        private bool UserExists(int id)
+        private bool EventExists(int id)
         {
-            return _userRepository.CheckUser(id);
+            return _eventRepository.CheckEvent(id);
         }
     }
 }
