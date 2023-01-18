@@ -25,7 +25,7 @@ namespace eventful_api_master.DataConfig
                 .IsRequired();
 
             builder.Property(x => x.Password)
-                .HasColumnType("varchar(32)")
+                .HasColumnType("varchar(100)")
                 .IsRequired();
 
             builder.Property(x => x.Cpf)
@@ -56,8 +56,7 @@ namespace eventful_api_master.DataConfig
                 .HasColumnType("datetime");
 
             builder.Property(x => x.CreationUser)
-                .HasColumnType("int")
-                .IsRequired();
+                .HasColumnType("int");
 
             builder.Property(x => x.ChangeUser)
                 .HasColumnType("int");

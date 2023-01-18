@@ -46,7 +46,6 @@ namespace eventful_api_master.Repository
             try
             {
                 _dbContext.Entry(user).State = EntityState.Modified;
-                //_dbContext.Users.Update(user);
                 await _dbContext.SaveChangesAsync();
             }
             catch (Exception)
@@ -62,9 +61,9 @@ namespace eventful_api_master.Repository
                 _dbContext.Users.Add(user);
                 await _dbContext.SaveChangesAsync();
 
-                user.CreationUser = user.Id;
-                _dbContext.Entry(user).State = EntityState.Modified;
-                _dbContext.SaveChangesAsync();
+                //user.CreationUser = user.Id;
+                //_dbContext.Entry(user).State = EntityState.Modified;
+                //_dbContext.SaveChangesAsync();
                 return user;
             }
             catch (Exception)
@@ -72,23 +71,14 @@ namespace eventful_api_master.Repository
                 throw;
             }
         }
-        public async Task<User> DeleteUser(int id)
+        public async Task<User> DeleteUser(User user)
         {
             try
             {
-                User? user = await _dbContext.Users.FindAsync(id);
-                if (user != null)
-                {
-                    user.Active = false;
-                    user.ChangeDate = DateTime.Now;
-                    user.ChangeUser = user.Id;
+                _dbContext.Entry(user).State = EntityState.Modified;
+                _dbContext.SaveChangesAsync();
+                return user;
 
-                    _dbContext.Entry(user).State = EntityState.Modified;
-                    _dbContext.SaveChangesAsync();
-                    return user;
-                }
-
-                throw new ArgumentNullException();
             }
             catch (Exception)
             {
@@ -99,5 +89,9 @@ namespace eventful_api_master.Repository
 
         public bool CheckUser(int id) => _dbContext.Users.Any(x => x.Id == id && x.Active);
 
+        public async Task<User?> Validate(string email, string password)
+        {
+            return await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email && x.Password == password && x.Active);
+        }
     }
 }

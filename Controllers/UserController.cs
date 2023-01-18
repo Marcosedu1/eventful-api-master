@@ -5,10 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.Data;
 
 namespace eventful_api_master.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/user")]
     public class UserController: ControllerBase
@@ -27,7 +28,7 @@ namespace eventful_api_master.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> Get(int id)
+        public async Task<ActionResult<User?>> Get(int id)
         {
             var user = await Task.FromResult(await _userRepository.GetUser(id));
             if (user == null)
@@ -38,7 +39,6 @@ namespace eventful_api_master.Controllers
         }
 
         [HttpPost]
-        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]        
         public async Task<IActionResult> Add(User user)
         {
@@ -54,12 +54,16 @@ namespace eventful_api_master.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize]
         public async Task<ActionResult<User>> Update(int id, [FromBody]JsonPatchDocument<User> user)
         {
             var userUpdate = await _userRepository.GetUser(id);
 
-            if (userUpdate == null)
-            {
+            ClaimsIdentity? claimsIdentity = this.User.Identity as ClaimsIdentity;
+            int.TryParse(claimsIdentity?.FindFirst(ClaimTypes.Name)?.Value, out int userId);
+
+            if (userUpdate == null && id != userId)
+            {                
                 return NotFound();
             }
             try
@@ -86,9 +90,37 @@ namespace eventful_api_master.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<User>> Delete(int id)
         {
-            await _userRepository.DeleteUser(id);
+            try
+            {
+                User? user = await _userRepository.GetUser(id);
+
+                ClaimsIdentity? claimsIdentity = this.User.Identity as ClaimsIdentity;
+                int.TryParse(claimsIdentity?.FindFirst(ClaimTypes.Name)?.Value, out int userId);
+
+                if (user == null || id == userId)
+                {
+                    return NotFound();
+                }
+
+                user.Active = false;
+                user.ChangeUser = userId;
+                user.ChangeDate = DateTime.Now;
+                await _userRepository.DeleteUser(user);
+            }
+            catch (DBConcurrencyException)
+            {
+                if (!UserExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }            
             return NoContent();
         }
         private bool UserExists(int id)

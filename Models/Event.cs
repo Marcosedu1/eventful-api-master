@@ -5,62 +5,44 @@ using System.Globalization;
 
 namespace eventful_api_master.Models
 {
-    public class Event
+    public class Event: Metadata
     {
         public int Id { get; set; }
 
         [JsonProperty("title")]
         [Required]
-        public string Title { get; set; }
+        public string Title { get; set; } = null!;
 
         [JsonProperty("description")]
         [Required]
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
 
         [JsonProperty("banner")]
         [Required]
-        public string Banner { get; set; }
+        public string Banner { get; set; } = null!;
 
         [JsonProperty("datetime")]
         [Required]
-        public DateTime Datetime { get; set; }
+        public DateTime? Datetime { get; set; } = null!;
 
         [JsonProperty("cep")]
         [Required]
-        public string Cep { get; set; }
+        public string Cep { get; set; } = null!;
 
         [JsonProperty("city")]
         [Required]
-        public string City { get; set; }
+        public string City { get; set; } = null!;
 
         [JsonProperty("uf")]
         [Required]
-        public string Uf { get; set; }
+        public string Uf { get; set; } = null!;
 
         [JsonProperty("address")]
         [Required]
-        public string Address { get; set; } 
+        public string Address { get; set; } = null!;
 
         [JsonProperty("number")]
         [Required]
-        public string Number { get; set; }
-
-        [JsonIgnore]
-        public bool Active { get; set; } = true;
-
-        [JsonIgnore]
-        public DateTime CreationDate { get; set; } = DateTime.Now;
-
-        [JsonIgnore]
-        [AllowNull]
-        public DateTime? ChangeDate { get; set; } = null;
-
-        [JsonIgnore]
-        public int CreationUser { get; set; }
-
-        [JsonIgnore]
-        [AllowNull]
-        public int? ChangeUser { get; set; } = null;
-                
+        public string Number { get; set; } = null!;
     }
 }

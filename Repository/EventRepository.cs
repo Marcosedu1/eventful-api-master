@@ -27,7 +27,6 @@ namespace eventful_api_master.Repository
             }
         }
 
-
         public async Task<Event?> GetEvent(int id)
         {
             try
@@ -70,21 +69,14 @@ namespace eventful_api_master.Repository
                 throw;
             }
         }
-        public async Task<Event> DeleteEvent(int id)
+        public async Task<Event> DeleteEvent(Event eventData)
         {
             try
             {
-                Event? eventData = await _dbContext.Events.FindAsync(id);
-                if (eventData != null)
-                {
-                    eventData.Active = false;
+                _dbContext.Entry(eventData).State = EntityState.Modified;
+                _dbContext.SaveChangesAsync();
+                return eventData;
 
-                    _dbContext.Entry(eventData).State = EntityState.Modified;
-                    _dbContext.SaveChangesAsync();
-                    return eventData;
-                }
-
-                throw new ArgumentNullException();
             }
             catch (Exception)
             {

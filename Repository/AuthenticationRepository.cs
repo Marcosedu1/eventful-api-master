@@ -18,12 +18,11 @@ namespace eventful_api_master.Repository
         {
             try
             {
-                User? user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email && x.Password == password && x.Active);
+                User user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email && x.Password == password && x.Active);
                 return user;
             }
             catch (Exception)
-            {        
-                
+            {                        
                 throw;
             }
         }

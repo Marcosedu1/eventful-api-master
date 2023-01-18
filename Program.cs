@@ -18,7 +18,6 @@ namespace eventful_api_master
             builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("dbConnection")));
             builder.Services.AddTransient<IUserRepository, UserRepository>();
             builder.Services.AddTransient<IEventRepository, EventRepository>();
-            builder.Services.AddTransient<IAuthenticationRepository, AuthenticationRepository>();
 
             // Add services to the container.
 
@@ -61,7 +60,7 @@ namespace eventful_api_master
                 cors.AllowAnyOrigin();
             });
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();

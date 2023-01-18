@@ -8,7 +8,8 @@ namespace eventful_api_master.Interface
         public Task<User?> GetUser(int id);
         public Task<User> AddUser(User user);
         public Task UpdateUser(User user);
-        public Task<User> DeleteUser(int id);
+        public Task<User> DeleteUser(User user);
+        public Task<User?> Validate(string email, string password);
         public bool CheckUser(int id);
     }
 }

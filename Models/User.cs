@@ -1,54 +1,39 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace eventful_api_master.Models
 {
-    public class User
+    [Index(nameof(Email), IsUnique = true)]
+    public class User: Metadata
     {
         public int Id { get; set; }
 
         [JsonProperty("firstName")]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = null!;
 
         [JsonProperty("lastName")]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = null!;
 
         [JsonProperty("email")]
-        public string Email { get; set; }
+        public string Email { get; set; } = null!;
 
         [JsonProperty("password")]
-        public string Password { get; set; }
+        public string Password { get; set; } = null!;
 
         [JsonProperty("cpf")]
-        public string Cpf { get; set; }
+        public string Cpf { get; set; } = null!;
 
         [JsonProperty("birthdate")]
-        public DateTime BirthDate { get; set; }
+        public DateTime? BirthDate { get; set; } = null!;
 
         [JsonProperty("genre")]
-        public int Genre { get; set; }
+        public int Genre { get; set; } = 0;
 
         [JsonProperty("acceptedTerms")]
-        public bool AcceptedTerms { get; set; } = false;
-
-        [JsonIgnore]
-        public bool Active { get; set; } = true;
-
-        [JsonIgnore]
-        public DateTime CreationDate { get; set; } = DateTime.Now;
-
-        [JsonIgnore]
-        [AllowNull]
-        public DateTime? ChangeDate { get; set; } = null;
-
-        [JsonIgnore]
-        public int CreationUser { get; set; }
-
-        [JsonIgnore]
-        [AllowNull]
-        public int? ChangeUser { get; set; } = null;
-                
+        public bool AcceptedTerms { get; set; } = false;      
+        
     }
 }

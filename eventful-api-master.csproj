@@ -18,6 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Interface\IAuthenticationRepository.cs" />
+    <Compile Remove="Repository\AuthenticationRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.2" />

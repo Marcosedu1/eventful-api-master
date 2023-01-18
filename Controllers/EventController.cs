@@ -5,10 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using eventful_api_master.Repository;
+using System.Data;
 
 namespace eventful_api_master.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/event")]
     public class EventController: ControllerBase
@@ -38,12 +40,16 @@ namespace eventful_api_master.Controllers
         }
 
         [HttpPost]
-        [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(StatusCodes.Status201Created)]        
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [Authorize]
         public async Task<IActionResult> Add(Event eventData)
         {
             try
             {
+                ClaimsIdentity? claimsIdentity = this.User.Identity as ClaimsIdentity;
+                int.TryParse(claimsIdentity?.FindFirst(ClaimTypes.Name)?.Value, out int userId);
+                eventData.CreationUser = userId;
+
                 await _eventRepository.AddEvent(eventData);
                 return CreatedAtAction(nameof(Add), new { id = eventData.Id }, eventData);
             }
@@ -54,6 +60,7 @@ namespace eventful_api_master.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize]
         public async Task<ActionResult<Event>> Update(int id, [FromBody]JsonPatchDocument<Event> eventData)
         {
             var eventUpdate = await _eventRepository.GetEvent(id);
@@ -64,6 +71,11 @@ namespace eventful_api_master.Controllers
             }
             try
             {
+                ClaimsIdentity? claimsIdentity = this.User.Identity as ClaimsIdentity;
+                int.TryParse(claimsIdentity?.FindFirst(ClaimTypes.Name)?.Value, out int userId);
+                eventUpdate.ChangeUser = userId;
+                eventUpdate.ChangeDate = DateTime.Now;
+
                 eventData.ApplyTo(eventUpdate, ModelState);
                 await _eventRepository.UpdateEvent(eventUpdate);
                 if (!ModelState.IsValid)
@@ -86,9 +98,37 @@ namespace eventful_api_master.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<Event>> Delete(int id)
         {
-            await _eventRepository.DeleteEvent(id);
+            try
+            {
+                Event? eventData = await _eventRepository.GetEvent(id);
+
+                ClaimsIdentity? claimsIdentity = this.User.Identity as ClaimsIdentity;
+                int.TryParse(claimsIdentity?.FindFirst(ClaimTypes.Name)?.Value, out int userId);
+
+                if (eventData == null)
+                {
+                    return NotFound();
+                }
+
+                eventData.Active = false;
+                eventData.ChangeUser = userId;
+                eventData.ChangeDate = DateTime.Now;
+                await _eventRepository.DeleteEvent(eventData);
+            }
+            catch (DBConcurrencyException)
+            {
+                if (!EventExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
             return NoContent();
         }
         private bool EventExists(int id)
