@@ -14,11 +14,13 @@ namespace eventful_api_master.Controllers
     [Route("api/user")]
     public class UserController: ControllerBase
     {
+        private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IConfiguration configuration, IUserRepository userRepository)
         {
             _userRepository = userRepository;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -40,16 +42,27 @@ namespace eventful_api_master.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]        
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Add(User user)
-        {
+        {            
             try
             {
+                user.HashPassword(_configuration.GetValue<string>("PasswordHash"));
                 await _userRepository.AddUser(user);
+
                 return CreatedAtAction(nameof(Add), new { id = user.Id }, user);
             }
+            catch (BadHttpRequestException)
+            {
+                return BadRequest(new
+                {
+                    code = "generic_error",
+                    msg = "Não foi possivel cadastrar o usuario, verifique os campos informados"
+                });
+            }
             catch (Exception)
-            {                
-                throw;
+            {
+                return StatusCode(500);
             }
         }
 

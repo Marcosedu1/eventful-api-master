@@ -1,39 +1,66 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using eventful_api_master.Utils;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace eventful_api_master.Models
 {
     [Index(nameof(Email), IsUnique = true)]
-    public class User: Metadata
+    public class User: Metadata, IValidatableObject
     {
         public int Id { get; set; }
 
-        [JsonProperty("firstName")]
-        public string FirstName { get; set; } = null!;
+        [Required]
+        [StringLength(20, MinimumLength = 3)]
+        public string FirstName { get; set; }
 
-        [JsonProperty("lastName")]
-        public string LastName { get; set; } = null!;
+        [Required]
+        [StringLength(20, MinimumLength = 3)]
+        public string LastName { get; set; }
 
-        [JsonProperty("email")]
-        public string Email { get; set; } = null!;
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
 
-        [JsonProperty("password")]
-        public string Password { get; set; } = null!;
+        [Required]
+        [StringLength(32, MinimumLength = 8)]
+        public string Password { get; set; }
 
-        [JsonProperty("cpf")]
-        public string Cpf { get; set; } = null!;
+        [Required]
+        [StringLength(11)]
+        public string Cpf { get; set; }
 
-        [JsonProperty("birthdate")]
-        public DateTime? BirthDate { get; set; } = null!;
+        [Required]
+        public DateTime? BirthDate { get; set; }
 
-        [JsonProperty("genre")]
-        public int Genre { get; set; } = 0;
+        [Required]
+        [Range(1,2)]
+        public int Genre { get; set; }
 
-        [JsonProperty("acceptedTerms")]
-        public bool AcceptedTerms { get; set; } = false;      
-        
+        [Required]
+        public bool AcceptedTerms { get; set; } = false;
+
+        public void HashPassword(string keyHash)
+        {
+            Password = Security.HashPassword(keyHash, Password);
+        }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            List<ValidationResult> result = new List<ValidationResult>();
+            if (BirthDate < DateTime.Now.AddYears(-100) || BirthDate > DateTime.Now.AddYears(-13))
+            {
+                result.Add(new ValidationResult("Digite uma data válida"));
+            }
+            return result;
+        }
     }
 }

@@ -25,7 +25,19 @@ namespace eventful_api_master.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Event>>> Get()
         {
-            return await Task.FromResult(_eventRepository.GetEvents());
+
+            try
+            {
+                return await Task.FromResult(_eventRepository.GetEvents());
+            }
+            catch (Microsoft.Data.SqlClient.SqlException)
+            {
+                return StatusCode(500,"Erro ao acessar banco de dados");
+            }
+            catch (Exception)
+            {
+                throw;
+            }           
         }
 
         [HttpGet("{id}")]
@@ -53,9 +65,17 @@ namespace eventful_api_master.Controllers
                 await _eventRepository.AddEvent(eventData);
                 return CreatedAtAction(nameof(Add), new { id = eventData.Id }, eventData);
             }
+            catch (BadHttpRequestException)
+            {
+                return BadRequest(new
+                {
+                    code = "generic_error",
+                    msg = "Não foi possivel cadastrar o evento, verifique os campos informados"
+                });
+            }
             catch (Exception)
-            {                
-                throw;
+            {
+                return StatusCode(500);
             }
         }
 
@@ -112,7 +132,6 @@ namespace eventful_api_master.Controllers
                 {
                     return NotFound();
                 }
-
                 eventData.Active = false;
                 eventData.ChangeUser = userId;
                 eventData.ChangeDate = DateTime.Now;

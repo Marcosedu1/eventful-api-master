@@ -5,44 +5,53 @@ using System.Globalization;
 
 namespace eventful_api_master.Models
 {
-    public class Event: Metadata
+    public class Event: Metadata, IValidatableObject
     {
         public int Id { get; set; }
 
-        [JsonProperty("title")]
         [Required]
-        public string Title { get; set; } = null!;
+        [StringLength(100, MinimumLength = 5)]
+        public string Title { get; set; }
 
-        [JsonProperty("description")]
         [Required]
-        public string Description { get; set; } = null!;
+        [StringLength(2000, MinimumLength = 10)]
+        public string Description { get; set; }
 
-        [JsonProperty("banner")]
         [Required]
-        public string Banner { get; set; } = null!;
+        [MinLength(1)]
+        public string Banner { get; set; }
 
-        [JsonProperty("datetime")]
         [Required]
-        public DateTime? Datetime { get; set; } = null!;
+        public DateTime? Datetime { get; set; }
 
-        [JsonProperty("cep")]
         [Required]
-        public string Cep { get; set; } = null!;
+        [StringLength(8)]
+        public string Cep { get; set; }
 
-        [JsonProperty("city")]
         [Required]
-        public string City { get; set; } = null!;
+        [MinLength(1)]
+        public string City { get; set; }
 
-        [JsonProperty("uf")]
         [Required]
-        public string Uf { get; set; } = null!;
+        [MinLength(1)]
+        public string Uf { get; set; }
 
-        [JsonProperty("address")]
         [Required]
-        public string Address { get; set; } = null!;
+        [MinLength(1)]
+        public string Address { get; set; }
 
-        [JsonProperty("number")]
         [Required]
-        public string Number { get; set; } = null!;
+        [MinLength(1)]
+        public string Number { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            List<ValidationResult> result = new List<ValidationResult>();
+            if (Datetime < DateTime.Now.AddMonths(1) || Datetime > DateTime.Now.AddYears(1))
+            {
+                result.Add(new ValidationResult("Digite uma data válida"));
+            }
+            return result;
+        }
     }
 }

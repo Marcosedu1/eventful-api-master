@@ -11,13 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Utils\**" />
-    <Content Remove="Utils\**" />
-    <EmbeddedResource Remove="Utils\**" />
-    <None Remove="Utils\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="Interface\IAuthenticationRepository.cs" />
     <Compile Remove="Repository\AuthenticationRepository.cs" />
   </ItemGroup>

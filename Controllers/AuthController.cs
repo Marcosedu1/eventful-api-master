@@ -27,6 +27,7 @@ namespace eventful_api_master.Controllers
         {
             if (user != null && user.Email != null && user.Password != null)
             {
+                user.HashPassword(_configuration.GetValue<string>("PasswordHash"));
                 var currentUser = await GetUser(user.Email, user.Password);
 
                 if (currentUser != null)

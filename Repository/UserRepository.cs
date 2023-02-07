@@ -60,10 +60,6 @@ namespace eventful_api_master.Repository
             {
                 _dbContext.Users.Add(user);
                 await _dbContext.SaveChangesAsync();
-
-                //user.CreationUser = user.Id;
-                //_dbContext.Entry(user).State = EntityState.Modified;
-                //_dbContext.SaveChangesAsync();
                 return user;
             }
             catch (Exception)

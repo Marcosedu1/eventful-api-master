@@ -16,15 +16,7 @@ namespace eventful_api_master.Repository
 
         public List<Event> GetEvents()
         {
-            try
-            {
-                return _dbContext.Events.Where(x => x.Active).ToList();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
+            return _dbContext.Events.Where(x => x.Active).ToList();
         }
 
         public async Task<Event?> GetEvent(int id)
@@ -35,8 +27,7 @@ namespace eventful_api_master.Repository
                 return eventData;
             }
             catch (Exception)
-            {        
-                
+            {                        
                 throw;
             }
         }
@@ -49,7 +40,6 @@ namespace eventful_api_master.Repository
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

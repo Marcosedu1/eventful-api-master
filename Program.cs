@@ -18,11 +18,15 @@ namespace eventful_api_master
             builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("dbConnection")));
             builder.Services.AddTransient<IUserRepository, UserRepository>();
             builder.Services.AddTransient<IEventRepository, EventRepository>();
+            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
             // Add services to the container.
 
             builder.Services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles).AddNewtonsoftJson();
+            {
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                x.JsonSerializerOptions.PropertyNameCaseInsensitive = false;
+            }).AddNewtonsoftJson();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
