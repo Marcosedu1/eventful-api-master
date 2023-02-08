@@ -15,6 +15,4 @@ namespace eventful_api_master.Utils
             numBytesRequested: 256 / 8));
         }
     }
-    //arrumar o banco de dados tirando o camelcase, tirar os jsonproperty e colocar no appsettings função que serializa os campos em camelcase
-    //estudar validações na mao no front-end
 }

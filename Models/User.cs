@@ -1,4 +1,6 @@
-﻿using eventful_api_master.Utils;
+﻿using eventful_api_master.Services;
+using eventful_api_master.Utils;
+using eventful_api_master.Utils.Converters;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +16,7 @@ using System.Text;
 namespace eventful_api_master.Models
 {
     [Index(nameof(Email), IsUnique = true)]
-    public class User: Metadata, IValidatableObject
+    public class User : Metadata, IValidatableObject
     {
         public int Id { get; set; }
 
@@ -28,6 +30,7 @@ namespace eventful_api_master.Models
 
         [Required]
         [EmailAddress]
+        [JsonConverter(typeof(LowerCase))]
         public string Email { get; set; }
 
         [Required]
@@ -56,9 +59,18 @@ namespace eventful_api_master.Models
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             List<ValidationResult> result = new List<ValidationResult>();
+
+            var cpfValidating = new CPFValidate();
+            var cpfValidated = cpfValidating.ValidateCPF(Cpf);
+
+            if (!cpfValidated)
+            {
+                result.Add(new ValidationResult("CPF Inválido"));
+            }
+
             if (BirthDate < DateTime.Now.AddYears(-100) || BirthDate > DateTime.Now.AddYears(-13))
             {
-                result.Add(new ValidationResult("Digite uma data válida"));
+                result.Add(new ValidationResult("Data de Nascimento Inválida"));
             }
             return result;
         }
